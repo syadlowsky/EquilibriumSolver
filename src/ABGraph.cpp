@@ -13,6 +13,7 @@
     License along with EF.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define GTEST_USE_OWN_TR1_TUPLE 1
 
 #include "ABGraph.hpp"
 #include <iostream>
