@@ -18,7 +18,7 @@
 #include <iostream>
 #include <queue>
 #include <utility>
-#include <tr1/tuple>
+#include <tuple>
 
 using namespace std;
 
@@ -78,12 +78,12 @@ void ABGraph::dijkstra(unsigned origin, vector<long>& distances, vector<unsigned
 {
 	const long unvisited = -1;//Ugly, dumb
 	
-	priority_queue<tr1::tuple<double, long, long> > queue;
-	queue.push(tr1::make_tuple(0.0, 0, origin));
+	priority_queue<std::tuple<double, long, long> > queue;
+	queue.push(std::make_tuple(0.0, 0, origin));
 	
 	while(!queue.empty()) {
-		double distance = tr1::get<0>(queue.top());
-		long id = tr1::get<2>(queue.top());
+		double distance = std::get<0>(queue.top());
+		long id = std::get<2>(queue.top());
 		
 		if(distance == -std::numeric_limits<double>::infinity()) break;
 		//Unnecessary, but saves putting unreachable nodes in the topo sort.
@@ -101,7 +101,7 @@ void ABGraph::dijkstra(unsigned origin, vector<long>& distances, vector<unsigned
 					//If statement unnecessary, but cuts runtime by 1/3...
 					
 					BackwardGraphEdge& bge = backwardStorage[*i];
-					queue.push(tr1::make_tuple(distance - bge.distance(), -order.size(), toNodeId));
+					queue.push(std::make_tuple(distance - bge.distance(), -order.size(), toNodeId));
 					
 					//(dist - len) instead of (dist + len) because it's a max-queue (we want the min)
 				}

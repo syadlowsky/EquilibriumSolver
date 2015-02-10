@@ -21,13 +21,13 @@
 #ifndef BPR_FUNCTION_HPP
 #define BPR_FUNCTION_HPP
 
-#ifdef _MSC_VER
+//#ifdef _MSC_VER
  #include <functional>
-#elif defined __PATHCC__
- #include <boost/tr1/functional.hpp>
-#else
- #include <tr1/functional>
-#endif
+//#elif defined __PATHCC__
+// #include <boost/tr1/functional.hpp>
+//#else
+// #include <tr1/functional>
+//#endif
 
 #include <vector>
 #include <cmath>
@@ -48,10 +48,10 @@ class BarGeraBPRFunction {
 		/**
 		 * TODO
 		 */
-		const std::tr1::function<double(double)> costFunction() const { return _costFunction; }
+		const std::function<double(double)> costFunction() const { return _costFunction; }
 
 	private:
-		std::tr1::function<double(double)> _costFunction;
+		std::function<double(double)> _costFunction;
 		class BPREval {
 			public:
 				BPREval(double zeroFlowTime, double practicalCapacity, double alpha, double beta, double extraCost) :

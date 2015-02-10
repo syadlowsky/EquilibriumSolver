@@ -4,13 +4,13 @@
 #include <map>
 #include <utility>
 
-#ifdef _MSC_VER
+//#ifdef _MSC_VER
  #include <functional>
-#elif defined __PATHCC__
- #include <boost/tr1/functional.hpp>
-#else
- #include <functional>
-#endif
+//#elif defined __PATHCC__
+ //#include <boost/tr1/functional.hpp>
+//#else
+// #include <functional>
+//#endif
 
 class InputGraph {
 	public:
