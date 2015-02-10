@@ -2,17 +2,17 @@
 #define AB_ADDER_HPP
 
 #include <utility>
-//#ifdef _MSC_VER
-#include <functional>
-//#elif defined __PATHCC__
-// #include <boost/tr1/functional.hpp>
-//#else
-// #include <tr1/functional>
-//#endif
+#ifdef _MSC_VER
+ #include <functional>
+#elif defined __PATHCC__
+ #include <boost/tr1/functional.hpp>
+#else
+ #include <tr1/functional>
+#endif
 
 class ABAdder
 {
-	typedef const std::function<double(double)>* func;
+	typedef const std::tr1::function<double(double)>* func;
 	public:
 		ABAdder(unsigned long addNum, unsigned long subtractNum) {
 			add.reserve(addNum);

@@ -9,13 +9,13 @@
 #elif defined __PATHCC__
  #include <boost/tr1/functional.hpp>
 #else
- #include <functional>
+ #include <tr1/functional>
 #endif
 
 class InputGraph {
 	public:
 		InputGraph() {}
-		typedef std::function<double(double)> VDF;
+		typedef std::tr1::function<double(double)> VDF;
 
 		void addEdge(unsigned from, unsigned to, VDF vdf) {
 			_graph[from][to] = vdf;

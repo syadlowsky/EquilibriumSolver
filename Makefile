@@ -17,7 +17,7 @@ CXX = g++
 CXXFLAGS = \
 	-g -pipe -pedantic-errors -Wparentheses -Wreturn-type\
 	-Wcast-qual -Wall -Wpointer-arith -Wwrite-strings -Wconversion -O3\
-	-march=native -pg -lrt -stdlib=libstdc++ -std=c++11
+	-march=native -pg -lrt
 
 # additional C++ Compiler options for linking
 
@@ -29,7 +29,7 @@ all: $(EXE)
 $(EXE): $(OBJS)
 	bla=;\
 	for file in $(OBJS); do bla=$(OBJDIR)"$$file $$bla"; done; \
-	$(CXX) $$bla $(CXXFLAGS) -o $@
+	$(CXX) $(CXXFLAGS) -o $@ $$bla
 
 clean:
 	bla=;\
