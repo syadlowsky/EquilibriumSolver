@@ -33,8 +33,6 @@ executable somewhat smaller. As a bonus, we can remove Boost as a dep soon.*/
 #include <iostream>
 #include "InputGraph.hpp"
 
-using namespace std;
-
 /**
  * Graph class providing some nice, simple storage for bush-specific data.
  * Contains a simple Dijkstra's algorithm implementation.
@@ -43,14 +41,14 @@ using namespace std;
 class ABGraph
 {
 	private:
-		std::vector<std::vector<int> > forwardStructure;
-		std::vector<int> edgeStructure;
+		std::vector<std::vector<unsigned> > forwardStructure;
+		std::vector<unsigned> edgeStructure;
 		std::vector<ForwardGraphEdge> forwardStorage;
 		std::vector<BackwardGraphEdge> backwardStorage;
 		
 		std::vector<BushNode> nodeStorage;
 		//Better idea: Store these things in a row, as now, but ordered specially so we can store structure as 2 iterators.
-		int numberOfEdges;
+		unsigned numberOfEdges;
 		//NOTE: Is there any reason to store this member?
 		//Is it ever used?
 
@@ -62,7 +60,7 @@ class ABGraph
 		class EdgeHolder {
 		public:
 			EdgeHolder(
-				int to, int from,
+				unsigned to, unsigned from,
 				bool real=false,
 				InputGraph::VDF func=HornerPolynomial(
 					std::vector<double>(1, std::numeric_limits<double>::infinity())
@@ -76,24 +74,24 @@ class ABGraph
 			bool operator==(const EdgeHolder &e) const {
 				return (first==e.first && second==e.second);
 			}
-			int first, second;
+			unsigned first, second;
 			bool real;
 			InputGraph::VDF func;
 		};
 		
 		void addEdge(EdgeHolder &e) {
-			forwardStructure.at(e.second).push_back(static_cast<int>(forwardStorage.size()));
+			forwardStructure.at(e.second).push_back(static_cast<unsigned>(forwardStorage.size()));
 			backwardStorage.push_back(BackwardGraphEdge(e.func(0.0), &nodeStorage.at(e.second)));
 			forwardStorage.push_back(ForwardGraphEdge(e.func, &nodeStorage.at(e.first)));
 		}
 		
-		int edge(long from, long to) {
-			std::cout << "Looking for edge (" << from << ", " << to << ")" << std::endl;
+		unsigned edge(long from, long to) {
+			//std::cout << "Looking for edge (" << from << ", " << to << ")" << std::endl;
 			
-			std::cout << "indices: " << edgeStructure.at(to) << ", " << edgeStructure.at(to+1) << std::endl;
+			//std::cout << "indices: " << edgeStructure.at(to) << ", " << edgeStructure.at(to+1) << std::endl;
 			
-			for(int i = edgeStructure.at(to); i != edgeStructure.at(to+1); ++i) {
-				std::cout << "\t have edge (" << (backwardStorage.at(i).fromNode()-&nodeStorage[0]) << ", " << to << ")" << std::endl;
+			for(unsigned i = edgeStructure.at(to); i != edgeStructure.at(to+1); ++i) {
+			//	std::cout << "\t have edge (" << (backwardStorage.at(i).fromNode()-&nodeStorage[0]) << ", " << to << ")" << std::endl;
 				if(backwardStorage.at(i).fromNode()-&nodeStorage[0] == from) {
 					return (i);
 				}
@@ -114,14 +112,14 @@ class ABGraph
 		/**
 		 * Simple structure query, returns index of edges between two nodes.
 		 */
-		ForwardGraphEdge& forwardEdge(int index) {
+		ForwardGraphEdge& forwardEdge(unsigned index) {
 			return forwardStorage[index];
 		}
-		BackwardGraphEdge& backwardEdge(int index) {
+		BackwardGraphEdge& backwardEdge(unsigned index) {
 			return backwardStorage[index];
 		}
 		
-		std::vector<BackwardGraphEdge>::iterator edgesFrom(int index) {
+		std::vector<BackwardGraphEdge>::iterator edgesFrom(unsigned index) {
 			return backwardStorage.begin()+edgeStructure.at(index);
 		}
 		
@@ -132,7 +130,7 @@ class ABGraph
 		/**
 		 * Gets the number of edges in the graph.
 		 */
-		int numEdges() const { return numberOfEdges; }
+		unsigned numEdges() const { return numberOfEdges; }
 
 		/**
 		 * Returns an EdgeIterator pointing to the "first" out-edge
@@ -158,7 +156,7 @@ class ABGraph
 		}
 		
 		//TODO: Add param info, have it return a good topo order (visited).
-		void dijkstra(int origin, std::vector<long>& distances, std::vector<int>& order);
+		void dijkstra(unsigned origin, std::vector<long>& distances, std::vector<unsigned>& order);
 		
 		/**
 		 * Returns the total user travel time in the current solution.
@@ -185,8 +183,8 @@ class ABGraph
 			o << "<END OF METADATA>\t\t\n\n\n";
 			o << "~ \tTail \tHead \t: \tVolume \tCost \t; \n";
 			
-			for(int i = 0; i < g.forwardStructure.size(); ++i) {
-				for(int j=0; j < g.forwardStructure[i].size(); ++j) {
+			for(unsigned i = 0; i < g.forwardStructure.size(); ++i) {
+				for(unsigned j=0; j < g.forwardStructure[i].size(); ++j) {
 					BackwardGraphEdge& bEdge = g.backwardStorage[g.forwardStructure[i][j]];
 					ForwardGraphEdge& fEdge = g.forwardStorage[g.forwardStructure[i][j]];
 					

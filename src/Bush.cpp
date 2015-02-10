@@ -27,7 +27,7 @@
 
 using namespace std;
 
-Bush::Bush(const Origin& o, ABGraph& g, vector<int>& tempStore, vector<int> &reverseTS) :
+Bush::Bush(const Origin& o, ABGraph& g, vector<unsigned>& tempStore, vector<unsigned> &reverseTS) :
 origin(o), edges(g.numVertices()+1), sharedNodes(g.nodes()), tempStore(tempStore), reverseTS(reverseTS), graph(g)
 {
 	//Set up graph data structure:
@@ -65,13 +65,13 @@ void Bush::setUpGraph()
 	}
 	
 	edgeStorage.reserve(graph.numEdges());
-	for(int i = 0; i < topologicalOrdering.size(); ++i) {
+	for(unsigned i = 0; i < topologicalOrdering.size(); ++i) {
 		edges[i+1] = edges[i];
 		
 		vector<BackwardGraphEdge>::iterator j = graph.edgesFrom(topologicalOrdering.at(i));
 		vector<BackwardGraphEdge>::iterator end = graph.edgesFrom(topologicalOrdering.at(i)+1);
 		for(; j != end; ++j) {
-			int fromPosition = (int)(distanceMap.at(j->fromNode()-&sharedNodes[0]));
+			unsigned fromPosition = (unsigned)(distanceMap.at(j->fromNode()-&sharedNodes[0]));
 			if(fromPosition < i) {
 				++edges[i+1];
 				edgeStorage.push_back(BushEdge(&*j));
@@ -118,7 +118,7 @@ void Bush::printCrap()
 	}
 
 	cout << "Topological Ordering:" << endl;
-	for(vector<int>::const_iterator i = topologicalOrdering.begin(); i != topologicalOrdering.end(); ++i)
+	for(vector<unsigned>::const_iterator i = topologicalOrdering.begin(); i != topologicalOrdering.end(); ++i)
 		cout << *i << " ";
 	cout << endl;
 }
@@ -159,15 +159,15 @@ void Bush::buildTrees()
 	
 	clearChanges();//Just in case, forget any edges need turning around
 	
-	int topoIndex = 1;
+	unsigned topoIndex = 1;
 	vector<BushEdge>::iterator evv = edgeStorage.begin()+edges[1];
-	vector<int>::iterator esp = edges.begin()+1;
+	vector<unsigned>::iterator esp = edges.begin()+1;
 	for(
-		vector<int>::const_iterator i = topologicalOrdering.begin()+1;
+		vector<unsigned>::const_iterator i = topologicalOrdering.begin()+1;
 		i < topologicalOrdering.end();
 		++i, ++topoIndex, ++esp
 	) {
-		int id = *i;
+		unsigned id = *i;
 		BushNode &v = sharedNodes[id];
 		
 		vector<BushEdge>::iterator end = edgeStorage.begin()+*(esp+1);
@@ -220,11 +220,11 @@ void Bush::topologicalSort()
 	
 	for(long i = start; i > 0; start=i) {
 		
-		int upperLimit = reverseTS[deletions[i-1].first];
-		int lowerLimit = upperLimit;
+		unsigned upperLimit = reverseTS[deletions[i-1].first];
+		unsigned lowerLimit = upperLimit;
 		
 		for(; i > 0 && reverseTS[deletions[i-1].first] >= lowerLimit; --i) {
-			int fromIndex = reverseTS[deletions[i-1].second->fromNode()-&sharedNodes[0]];
+			unsigned fromIndex = reverseTS[deletions[i-1].second->fromNode()-&sharedNodes[0]];
 			if(lowerLimit > fromIndex) lowerLimit = fromIndex;
 		}
 		
@@ -234,7 +234,7 @@ void Bush::topologicalSort()
 	}
 }
 
-void Bush::partialTS(int lower, int upper, long start)
+void Bush::partialTS(unsigned lower, unsigned upper, long start)
 {
 	/*
 	 * This is where the actual topological re-ordering happens. The
@@ -249,7 +249,7 @@ void Bush::partialTS(int lower, int upper, long start)
 	 * vector.
 	 */
 	
-	typedef vector<int>::iterator vi;
+	typedef vector<unsigned>::iterator vi;
 	
 	tempStore.clear();
 	
@@ -265,7 +265,7 @@ void Bush::partialTS(int lower, int upper, long start)
 	
 	updateEdgeStorage(upper, lower, start);
 
-	int numIndex=lower;
+	unsigned numIndex=lower;
 	vi tsIndex = tempStore.begin();
 	for(vi i = begin; i != end; ++i, ++tsIndex, ++numIndex) {
 		
@@ -280,7 +280,7 @@ void Bush::partialTS(int lower, int upper, long start)
 	}
 }
 
-void Bush::updateEdgeStorage(int upper, int lower, long deletionsIt)
+void Bush::updateEdgeStorage(unsigned upper, unsigned lower, long deletionsIt)
 {
 	/*
 	 * TODO: Make this pretty. It is probably the ugliest function in the
@@ -288,16 +288,16 @@ void Bush::updateEdgeStorage(int upper, int lower, long deletionsIt)
 	 */
 	long additionsIt = deletionsIt;
 	vector<BushEdge> vb;
-	vector<int> edgeIndices(upper-lower);
-	int edgeIndicesIndex=0;
+	vector<unsigned> edgeIndices(upper-lower);
+	unsigned edgeIndicesIndex=0;
 	
 	for(
-		vector<int>::reverse_iterator i=tempStore.rbegin();
+		vector<unsigned>::reverse_iterator i=tempStore.rbegin();
 		i != tempStore.rend();
 		++i, ++edgeIndicesIndex
 	) {
-		int id = *i;
-		int tIndex = reverseTS[id];
+		unsigned id = *i;
+		unsigned tIndex = reverseTS[id];
 		
 		int edgeIt = edges[tIndex+1]-1;
 		for(int edgesEnd = edges[tIndex]; edgeIt >= edgesEnd; --edgeIt) {
@@ -319,7 +319,7 @@ void Bush::updateEdgeStorage(int upper, int lower, long deletionsIt)
 	}
 	copy(vb.rbegin(), vb.rend(), edgeStorage.begin()+edges[lower]);
 	edgeIndicesIndex = upper-lower;
-	for(vector<int>::iterator i=edges.begin()+lower; i != edges.begin()+upper; ++i) {
+	for(vector<unsigned>::iterator i=edges.begin()+lower; i != edges.begin()+upper; ++i) {
 		*(i+1) = *i + edgeIndices[--edgeIndicesIndex];
 	}
 }
